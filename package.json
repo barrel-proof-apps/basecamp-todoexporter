@@ -9,10 +9,10 @@
   "author": "Andrew Zuercher",
   "license": "BSD-2-Clause",
   "devDependencies": {
-    "basecamp": "~0.2.0",
     "node-rest-client": "~1.5.1",
     "when": "~3.7.4",
     "fast-csv": "~0.6.0",
-    "minimist": "~1.2.0"
+    "minimist": "~1.2.0",
+    "underscore": "~1.8.3"
   }
 }
