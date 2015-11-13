@@ -1,16 +1,16 @@
-var config = require("./config");
 var Client = require('node-rest-client').Client;
 var when = require("when");
 var _ = require("underscore")
 var csv  = require("fast-csv")
-
-var options_auth={user:config.username,password:config.password};
-
-client = new Client(options_auth)
 var parseArgs = require('minimist')(process.argv.slice(2));
 
-var projectId = parseArgs.projectId ? parseArgs.projectId : config.projectId
-var accountId = parseArgs.accountId ? parseArgs.accountId : config.accountId
+var projectId = parseArgs.projectId
+var accountId = parseArgs.accountId
+var username = parseArgs.username
+var password = parseArgs.password
+
+var options_auth={user:username,password:password};
+client = new Client(options_auth)
 
 var prefix = "https://basecamp.com/" + accountId + "/api/v1";
 var toUrl = function(snippet) {
@@ -51,9 +51,6 @@ var helper = module.exports = {
 	}
 }
 
-// helper.projects().then(function(data){
-// 	console.log("data: " + data[0].id)
-// })
 helper.todoLists(projectId).then(function(data){
 	var filtered = _.filter(data, function(list){
 		return list.name.indexOf("Theme: ") == 0
