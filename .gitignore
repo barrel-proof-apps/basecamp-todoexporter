@@ -1,0 +1,5 @@
+doc
+config.js
+gen.sh
+node_modules
+*.csv
