@@ -22,4 +22,6 @@ usage:
 
     bcexporter --accountId 9999999 --projectId 1111111  --username u --password p --userAgent "Myapp (http://barrelproofapps.com)"
 
+or save to a csv on your system (ex: estimates.csv):
 
+    bcexporter --accountId 9999999 --projectId 1111111  --username u --password p --userAgent "Myapp (http://barrelproofapps.com)" > estimates.csv
