@@ -7,8 +7,12 @@ this tool is useful for creating a csv that you can then import into whatever yo
 * username (for basecamp) ex: u
 * password (for basecamp) ex: p
 
+installation
+
+npm install -g basecamp-todoexporter
+
 usage:
 
-node index.js --accountId 9999999 --projectId 1111111  --username u --password p > estimates-website.csv
+bcexporter --accountId 9999999 --projectId 1111111  --username u --password p > estimates-website.csv
 
 

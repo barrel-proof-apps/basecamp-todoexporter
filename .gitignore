@@ -3,3 +3,5 @@ config.js
 gen.sh
 node_modules
 *.csv
+.DS_Store
+*.log

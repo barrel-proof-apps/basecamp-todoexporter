@@ -2,75 +2,78 @@ var Client = require('node-rest-client').Client;
 var when = require("when");
 var _ = require("underscore")
 var csv  = require("fast-csv")
-var parseArgs = require('minimist')(process.argv.slice(2));
 
-var projectId = parseArgs.projectId
-var accountId = parseArgs.accountId
-var username = parseArgs.username
-var password = parseArgs.password
-
-var options_auth={user:username,password:password};
-client = new Client(options_auth)
-
-var prefix = "https://basecamp.com/" + accountId + "/api/v1";
-var toUrl = function(snippet) {
-	return prefix + snippet
-}
-var toUserUrl = function(snippet) {
-	return "https://basecamp.com/" + accountId + "/projects/" +projectId + snippet
-}
-var args = {
-	headers: {
-		'User-Agent': 'Myapp (http://barrelproofapps.com)'
-	}
-};
-var helper = module.exports = {
-	projects: function() {
-		return when.promise(function(resolve, reject, notify) {
-			client.get(toUrl("/projects.json"), args,function(data, response){
-				var obj = JSON.parse(data)
-				resolve(obj)
-			})
-		});
-	},
-	todoLists:function(projectId){
-		return when.promise(function(resolve, reject, notify) {
-			client.get(toUrl("/projects/"+projectId + "/todolists.json"), args,function(data, response){
-				var obj = JSON.parse(data)
-				resolve(obj)
-			})
-		});
-	},
-	todos:function(projectId, todoListId){
-		return when.promise(function(resolve, reject, notify) {
-			client.get(toUrl("/projects/"+projectId + "/todolists/" + todoListId + "/todos.json"), args,function(data, response){
-				var obj = JSON.parse(data)
-				resolve(obj)
-			})
-		});
-	}
-}
-
-helper.todoLists(projectId).then(function(data){
-	var filtered = _.filter(data, function(list){
-		return list.name.indexOf("Theme: ") == 0
-	})
-	var todos = _.map(filtered, function(todoList){
-		return helper.todos(projectId, todoList.id).then(function(todos){
-			return todos
-		})
-	})
-	when.all(todos).then(function(todos){
-		todos = _.flatten(todos, true)
-		var csvStream = csv.format({headers: true});
-		csvStream.pipe( process.stdout);
-		_.each(todos, function(todo){
-			csvStream.write({
-				theme: todo.todolist.name,
-				story: todo.content,
-				todoUrl: toUserUrl("/todos/" + todo.id)
+module.exports = function(config){
+	return {
+		config:config,
+		_toUrl: function(snippet) {
+			return "https://basecamp.com/" + this.config.accountId + "/api/v1" + snippet;
+		},
+		_toUserUrl: function(snippet) {
+			return "https://basecamp.com/" + this.config.accountId + "/projects/" +this.config.projectId + snippet
+		},
+		_client: function() {
+			if (!this.__client) {
+				this.__client = new Client({user:this.config.username,password:this.config.password})
+			}
+			return this.__client;
+		},
+		_args:function() {
+			return {
+				headers: {
+					'User-Agent': this.config.userAgent
+				}
+			}
+		},
+		projects: function() {
+			var self = this;
+			return when.promise(function(resolve, reject, notify) {
+				self._client().get(self._toUrl("/projects.json"), self._args(),function(data, response){
+					resolve(JSON.parse(data))
+				})
 			});
-		})
-		csvStream.end()
-	})
-})
+		},
+		todoLists:function(projectId){
+			var self = this;
+			return when.promise(function(resolve, reject, notify) {
+				self._client().get(self._toUrl("/projects/"+projectId + "/todolists.json"), self._args(),function(data, response){
+					var obj = JSON.parse(data)
+					resolve(obj)
+				})
+			});
+		},
+		todos:function(projectId, todoListId){
+			var self = this;
+			return when.promise(function(resolve, reject, notify) {
+				self._client().get(self._toUrl("/projects/"+projectId + "/todolists/" + todoListId + "/todos.json"), self._args(),function(data, response){
+					var obj = JSON.parse(data)
+					resolve(obj)
+				})
+			});
+		},
+		createCsv:function(projectId){
+			var self = this;
+			self.todoLists(projectId).then(function(data){
+				var todos = _.map(data, function(todoList){
+					return self.todos(projectId, todoList.id).then(function(todos){
+						return todos;
+					})
+				})
+				when.all(todos).then(function(todos){
+					todos = _.flatten(todos, true)
+					var csvStream = csv.format({headers: true});
+					csvStream.pipe( process.stdout);
+					_.each(todos, function(todo){
+						csvStream.write({
+							theme: todo.todolist.name,
+							story: todo.content,
+							todoUrl: self._toUserUrl("/todos/" + todo.id)
+						});
+					})
+					csvStream.end()
+				})
+			})
+		}
+	};
+}
+

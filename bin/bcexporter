@@ -1,0 +1,7 @@
+#!/usr/bin/env node
+// --debug-brk
+
+var parsedArgs = require('minimist')(process.argv.slice(2));
+
+var helper = require("../exporter")(parsedArgs);
+helper.createCsv(parsedArgs.projectId);
