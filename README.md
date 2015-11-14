@@ -6,6 +6,7 @@ this tool is useful for creating a csv that you can then import into whatever yo
 * projectId (from your bascamp url) ex: 1111111
 * username (for basecamp) ex: u
 * password (for basecamp) ex: p
+* userAgent - needed by bascamp for all requests ex: Myapp (http://barrelproofapps.com)
 
 this will stream a csv to stdout with the following columns:
 
@@ -19,6 +20,6 @@ installation
 
 usage:
 
-    bcexporter --accountId 9999999 --projectId 1111111  --username u --password p
+    bcexporter --accountId 9999999 --projectId 1111111  --username u --password p --userAgent "Myapp (http://barrelproofapps.com)"
 
 
