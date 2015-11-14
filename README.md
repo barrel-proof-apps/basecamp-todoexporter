@@ -7,11 +7,11 @@ this tool is useful for creating a csv that you can then import into whatever yo
 * username (for basecamp) ex: u
 * password (for basecamp) ex: p
 
-this will create a csv with the following columns:
+this will stream a csv to stdout with the following columns:
 
 * theme (maps to todo list)
 * story (todo name)
-* url (basecamp url)
+* todoUrl (basecamp url)
 
 installation
 
@@ -19,6 +19,6 @@ installation
 
 usage:
 
-    bcexporter --accountId 9999999 --projectId 1111111  --username u --password p > estimates-website.csv
+    bcexporter --accountId 9999999 --projectId 1111111  --username u --password p
 
 
