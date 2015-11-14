@@ -6,7 +6,16 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Andrew Zuercher",
+  "author": {
+    "name": "Barrel Poof Apps",
+    "email": "info@barrelproofapps.com"
+  },
+  "maintainers": [
+    {
+      "name": "Andrew Zuercher",
+      "email": "az@barrelproofapps.com"
+    }
+  ],
   "license": "MIT",
   "dependencies": {
     "node-rest-client": "~1.5.1",

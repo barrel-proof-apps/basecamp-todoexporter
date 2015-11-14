@@ -3,5 +3,5 @@
 
 var parsedArgs = require('minimist')(process.argv.slice(2));
 
-var helper = require("../exporter")(parsedArgs);
+var helper = require("../index")(parsedArgs);
 helper.createCsv(parsedArgs.projectId);
