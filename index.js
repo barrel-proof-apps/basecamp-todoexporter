@@ -51,6 +51,23 @@ module.exports = function(config){
 				})
 			});
 		},
+		parseContent:function(content){
+			var match = /(:one:|:two:|:three:) *(.*)/.exec(content);
+			if (match){
+				priority = match[1].replace(":one:", 1).replace(":two:", "2").replace(':three:', "3");
+				var body = match[2]
+				return [priority, body]
+			} else {
+				return ["", content]
+			}
+
+		},
+		parseTheme:function(todoListName){
+			var match = /Theme: *(.*)/.exec(todoListName);
+			if (match) {
+				return match[1]
+			}
+		},
 		createCsv:function(projectId){
 			var self = this;
 			self.todoLists(projectId).then(function(data){
@@ -64,11 +81,17 @@ module.exports = function(config){
 					var csvStream = csv.format({headers: true});
 					csvStream.pipe( process.stdout);
 					_.each(todos, function(todo){
-						csvStream.write({
-							theme: todo.todolist.name,
-							story: todo.content,
-							todoUrl: self._toUserUrl("/todos/" + todo.id)
-						});
+						var content = self.parseContent(todo.content);
+						var theme = self.parseTheme(todo.todolist.name);
+						if (theme) {
+							csvStream.write({
+								theme: theme,
+								story: content[1],
+								priortiy: content[0],
+								todoUrl: self._toUserUrl("/todos/" + todo.id)
+							});
+
+						}
 					})
 					csvStream.end()
 				})
